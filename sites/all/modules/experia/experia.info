@@ -1,0 +1,10 @@
+name = experia
+description = Experia custom module for drupal
+core = 7.x
+package = experia
+version = VERSION
+
+; Information added by mark sobrevilla packaging script on 2015-28-06
+version = "1.0"
+project = "experia"
+datestamp = "1393817486"

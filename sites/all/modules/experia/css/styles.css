@@ -1,0 +1,14 @@
+.installation-cost{
+  width: 100%;
+  text-align: right;
+}
+
+.views-widget select#edit-type option[value="quotation"],
+form.node-quotation-form .field-name-field-scope-of-work,
+form.node-quotation-form .field-name-field-terms-and-conditions,
+form.node-quotation-form .field-name-field-exclusion,
+form.node-quotation-form .field-name-field-warranty,
+form.node-quotation-form .field-name-field-conclusion
+{
+  display: none !important;  
+} 
