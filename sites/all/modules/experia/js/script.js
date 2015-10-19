@@ -32,8 +32,8 @@ $(document).ready(function(){
   
   $('form#views-exposed-form-all-quotation-default').attr('action','');
   
-  $('.views-widget select#edit-type option[value="quotation"]').remove();
-  $('.views-widget select#edit-type option[value="All"]').remove();
+  //$('.views-widget select#edit-type option[value="quotation"]').remove();
+  //$('.views-widget select#edit-type option[value="All"]').remove();
   $('a[href="/node/add/quotation"]').parents('li').hide();
   
   $('select#edit-price-range-min').change(function(){

@@ -27,29 +27,27 @@
         padding: 5px;
         word-wrap: break-word;
         word-break: break-all;
-      } 
+      }
+      .header ul{
+        list-style-type: none;
+      }
     </style>
   </head>
 <body>
 <div class="quotation-html">
- 
+ <?php $customer_details = node_load($_POST['customer']); ?>
   <table class="header">
     <tr>
       <td> 
-        <img src="<?php echo $base_url . '/' . drupal_get_path('module','experia') . '/images/logo.jpg' ?>"  />
+        <img src="<?php echo $base_url . '/' . drupal_get_path('module','experia') . '/images/front-logo.jpg' ?>" width="100" height="100"  />
       </td>
       <td> 
-          <span>Experia Inc.</span><br />
-          <span>0065 President Avenue, Paranaque, Metro, Manila</span><br />
-          <span>Tin No.: 224 459 256 000</span><br />
-          <span>Telephone: (+632) 738-8407</span><br />
-          <span>Fax: (632) 828-7088</span> <br />
-          <span>Email: experia@engineer.com</span> 
+          <?php echo $_POST['header']['value']; ?>
       </td>
     </tr>
   </table>
   <br />
-  <?php $customer_details = node_load($_POST['customer']); ?>
+  
   <b>DATE: <?php echo date('d-M-Y'); ?></b> <br />
   <b>ATTENTION:</b> <?php echo $customer_details->field_contact_person['und'][0]['value']; ?><br />
   <b>COMPANY:</b> <?php echo $customer_details->title; ?><br />
@@ -94,6 +92,13 @@
     </tr>
   <?php } ?>
   </table>
+  <table>
+    <tr>
+      <td width="700" style="text-align: right;">
+        <h4>SUPPLY COST: <?php echo number_format($grand_total ,2); ?></h4>
+      </td> 
+    </tr>
+  </table>
 
   <br /> 
   <?php if(!empty($_POST['installation_total'][0])){ ?>
@@ -105,9 +110,12 @@
       <th>UNIT</th>
       <th>TOTAL</th> 
     </tr>
-  <?php 
+  <?php
+    $installation_cost = 0;
     foreach($_POST['installation_location'] as $key => $value){
+    $installation_cost += (float) $_POST['installation_total'][$key];
     $grand_total += (float) $_POST['installation_total'][$key];
+    
   ?>
     <tr>
       <td><?php echo $value; ?></td>
@@ -117,15 +125,20 @@
     </tr>
   <?php } ?>
   </table>
-  
+  <table>
+    <tr>
+      <td width="700" style="text-align: right;">
+        <h4>INSTALLATION COST: <?php echo number_format($installation_cost ,2); ?></h4>
+      </td> 
+    </tr>
+  </table>
   <?php } ?>
   
   <table>
     <tr>
       <td width="700" style="text-align: right;">
         <h3>TOTAL COST: <?php echo number_format($grand_total,2); ?></h3>
-      </td>
-       
+      </td> 
     </tr>
   </table>
   

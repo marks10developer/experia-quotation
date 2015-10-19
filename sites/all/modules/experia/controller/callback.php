@@ -52,7 +52,7 @@ function experia_quotation_step_3(){
 
 
 function experia_quotation_preview_pdf($node){
-  global $user;
+  global $user; 
   if(in_array('administrator',$user->roles)
      || in_array('manager', $user->roles)
      || "Approved" == $node->field_status['und'][0]['value']){

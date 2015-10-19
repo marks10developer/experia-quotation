@@ -3,6 +3,7 @@ function quotation_step_2($form, &$form_state, $params){
   global $base_url;
   $form = array();
   //$form['#action'] = $base_url . '/experia/quotation/step-3';
+
   $form['customer'] = array(
     '#type' => 'select',
     '#title' => 'Customer',
@@ -14,6 +15,16 @@ function quotation_step_2($form, &$form_state, $params){
     '#suffix' => '<div><a href="'.$base_url.'/node/add/customers">+ Add new Customer</a></div><br />'
   );
 
+  $form['header'] = array(
+      '#type' => 'text_format',
+      '#format' => 'full_html',
+      '#title' => 'Header',
+      '#wysiwyg' => true,
+      '#value' => variable_get('header',''),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+  );
+  
   if(isset($params['aircons']) && !empty($params['aircons'])){
     $form['table'] =  array(
       '#type' => 'markup',
@@ -316,6 +327,7 @@ function quotation_step_2_submit($form, &$form_state){
     $node->field_aircons_details['und'][0]['value'] = serialize($aircon_details_array);
     $node->field_installation_details['und'][0]['value'] = serialize($installation_details);
     $node->field_scope_of_work['und'][0]['value'] = $input['work_scope']['value'];
+    $node->field_header‎['und'][0]['value'] = $input['header']['value'];
     $node->field_terms_and_conditions['und'][0]['value'] = $input['terms_and_conditions']['value'];
     $node->field_exclusion['und'][0]['value'] = $input['exclusion']['value'];
     $node->field_warranty['und'][0]['value'] = $input['warranty']['value'];

@@ -12,6 +12,16 @@ function quotation_default_values($form, &$form_state){
     '#suffix' => '</p>',
   );
   
+  $form['header'] = array(
+      '#type' => 'text_format',
+      '#format' => 'full_html',
+      '#title' => 'Header',
+      '#wysiwyg' => true,
+      '#value' => variable_get('header',''),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+  );
+  
   $form['terms_and_conditions'] = array(
     '#type' => 'text_format',
     '#format' => 'plain_text',
@@ -62,6 +72,7 @@ function quotation_default_values($form, &$form_state){
 function quotation_default_values_submit($form, &$form_state) {
   $input = $form_state['input'];
   variable_set('work_scope', $input['work_scope']['value']);
+  variable_set('header', $input['header']['value']);
   variable_set('terms_and_conditions', $input['terms_and_conditions']['value']);
   variable_set('exclusion', $input['exclusion']['value']);
   variable_set('warranty', $input['warranty']['value']);

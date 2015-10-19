@@ -23,6 +23,16 @@ function update_content($form, &$form_state, $params){
         'id' => 'customer',
       ),
     );
+    
+    $form['header'] = array(
+        '#type' => 'text_format',
+        '#format' => 'full_html',
+        '#title' => 'Header',
+        '#wysiwyg' => true,
+        '#value' => isset($quotation_details->field_header['und']) ? $quotation_details->field_header['und'][0]['value'] : '',
+        '#prefix' => '<p>',
+        '#suffix' => '</p>',
+    );
   
     $form['table'] =  array(
       '#type' => 'markup',
@@ -326,6 +336,11 @@ function update_content_submit($form, &$form_state){
     $node->title = $input['title'];
     //$node->status = 1;
     //$node->field_status['und'][0]['value'] = 'Waiting Approval';
+    if(in_array('quotation requestor', $user->roles) && "Declined" == $node->field_status['und'][0]['value']){
+      $node->field_status['und'][0]['value'] = 'Waiting Approval';
+    }
+    
+    
     $node->body['und'][0]['value'] = $content;
     $node->field_aircons_details['und'][0]['value'] = serialize($aircon_details_array);
     $node->field_installation_details['und'][0]['value'] = serialize($installation_details);
