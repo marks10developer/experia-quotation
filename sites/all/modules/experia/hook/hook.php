@@ -148,10 +148,44 @@ function experia_form_alter(&$form, &$form_state, $form_id)  {
     drupal_add_css('.field-name-body,
                    .field-name-field-aircons-details,
                    .field-name-field-installation-details,
-                   .vertical-tabs,#edit-preview,#edit-delete
+                   .vertical-tabs,#edit-preview,#edit-delete,
+                   .form-type-checkbox
                    {display:none;}','inline');
     $form_state['redirect'] = '/home';
+  }else if($form_id == 'customers_node_form'){
+    $form['title']['#title'] = 'Company Name';
+    drupal_add_js('
+      $(document).ready(function(){
+          $("#edit-field-firstname-und-0-value, #edit-field-lastname-und-0-value").on("keyup", function(){
+            $("#edit-title, #edit-field-contact-person-und-0-value").val( $("#edit-field-firstname-und-0-value").val() + " " + $("#edit-field-lastname-und-0-value").val() );
+          });
+          $("#edit-title").on("keyup", function(){
+            $("#edit-field-firstname-und-0-value").val(  $(this).val() );
+            $("#edit-field-lastname-und-0-value").val(  $(this).val() );
+          });
+          
+          initCustomerFields( $("input[name=\"field_customer_type[und]\"]:checked").val() );
+          $("input[name=\"field_customer_type[und]\"]").on("change",function(){
+            initCustomerFields($(this).val());
+          });
+      });
+      
+      function initCustomerFields(val){ 
+        if("Residential" == val){
+          $(".form-item-title, .form-item-field-contact-person-und-0-value").hide();
+          $(".form-item-field-firstname-und-0-value, .form-item-field-lastname-und-0-value").show();
+        }else{
+          $(".form-item-title, .form-item-field-contact-person-und-0-value").show();
+          $(".form-item-field-firstname-und-0-value, .form-item-field-lastname-und-0-value").hide();
+        }
+      }
+    ','inline');
+    
+    
+    
   }
+  
+    
 }
 
 function experia_user_data_update_submit($form, &$form_state) {
@@ -162,4 +196,4 @@ function experia_user_data_update_submit($form, &$form_state) {
   $edit['data']['position'] = $input['position'];
   user_save($user, $edit);
 }
- 
+

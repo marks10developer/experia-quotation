@@ -23,7 +23,7 @@ function update_content($form, &$form_state, $params){
         'id' => 'customer',
       ),
     );
-    
+
     $form['header'] = array(
         '#type' => 'text_format',
         '#format' => 'full_html',
@@ -39,7 +39,7 @@ function update_content($form, &$form_state, $params){
       '#markup' => '<div class="form-item form-type-select form-item-supply-items">
           <label for="">Item I. Supply:</label>
         </div>
-      <table class="views-table sticky-enabled cols-7 tableheader-processed sticky-table">
+      <table class="views-table sticky-enabled cols-7 tableheader-processed sticky-table supply-table">
       <tr>
         <th>Quantity</th>
         <th>Discount %</th>
@@ -69,7 +69,7 @@ function update_content($form, &$form_state, $params){
       $form['aircon_quantity['.$aircon_details->nid.']'] = array(
         '#type' => 'select',
         //'#title' => 'Quantity',
-        '#options' => array_combine( range(1,30), range(1,30)),
+        '#options' => array_combine( range(1,100), range(1,100)),
         '#attributes' => array(
           'class' => array("custom-select"),  
           'id' => 'aircon-quantity',  
@@ -78,7 +78,7 @@ function update_content($form, &$form_state, $params){
         '#prefix' => '<td>',
         '#suffix' => '</td>',
       );
-      $form['aircon_discount_percentage['.$aircon_details->nid.']'] = array(
+      /*$form['aircon_discount_percentage['.$aircon_details->nid.']'] = array(
         '#type' => 'textfield',
         //'#title' => 'Quantity',
         '#attributes' => array(
@@ -91,7 +91,21 @@ function update_content($form, &$form_state, $params){
         '#value' => $aircon['aircon_discount_percentage'],  
         '#prefix' => '<td>',
         '#suffix' => '</td>',
+      );*/
+      
+      $form['aircon_discount_percentage['.$aircon_details->nid.']'] = array(
+        '#type' => 'select',
+        //'#title' => 'Quantity',
+        '#attributes' => array(
+          'class' => array("custom-select"),
+          'id' => 'aircon-discount-percentage',
+        ),
+        '#options' => range(0,$brand_load->field_discount['und'][0]['value']),
+        '#value' => $aircon['aircon_discount_percentage'], 
+        '#prefix' => '<td>',
+        '#suffix' => '</td>',
       );
+      
       $form['markup_customer_title_' . $key ] =  array(
          '#type' => 'markup',
          '#markup' => '<span>'.$aircon_details->title.'</span>',
@@ -135,9 +149,14 @@ function update_content($form, &$form_state, $params){
          '#markup' => '</tr>'
       ); 
     }
+
     $form['table_end'] =  array(
        '#type' => 'markup',
        '#markup' => '</table>'
+    );
+    $form['supply_cost'] =  array(
+       '#type' => 'markup',
+       '#markup' => '<div class="supply-cost"><h2>Total Supply Amount</h2><h2 class="total-cost" id="supply_cost"></h2></div>'
     );
   }else{
     drupal_goto('experia/quotation/step-1');
@@ -156,14 +175,15 @@ function update_content($form, &$form_state, $params){
      '#markup' => '<tr>
         <th>Location</th>
         <th>Description</th>
-        <th>Unit</th>
+        <th>Qty</th>
+        <th>Amount</th>
         <th>Total</th>
         <th>&nbsp;</th>
       </tr>'
   ); 
 
   foreach($installations as $key => $installation){
-    $form['table_2_items'] =  array(
+    $form['table_2_items' . $key] =  array(
        '#type' => 'markup',
        '#markup' => '<tr id="installation-items">'
     );
@@ -181,7 +201,7 @@ function update_content($form, &$form_state, $params){
     );
     $form['installation_description' . $key] = array(
       '#type' => 'textfield',
-      '#size' => 65,
+      '#size' => 60,
       '#attributes' => array(
         'class' => array("custom-select"),  
         'id' => 'installation-quantity',
@@ -192,13 +212,27 @@ function update_content($form, &$form_state, $params){
       '#value' => $installation['installation_description']
     );
     
+    $form['installation_qty' . $key] = array(
+      '#type' => 'select', 
+      '#attributes' => array(
+        'class' => array("custom-select"),  
+        'id' => 'installation-qty',
+        'name' => 'installation_qty[]'
+      ),
+      '#prefix' => '<td>',
+      '#options' => array_combine( range(1,100), range(1,100)),
+      '#suffix' => '</td>',
+      '#value' => isset($installation['installation_qty']) ? $installation['installation_qty'] : '',
+    );
+    
     $form['installation_unit' . $key] = array(
       '#type' => 'textfield',
       '#size' => 15,
       '#attributes' => array(
         'class' => array("custom-select"),  
         'id' => 'installation-unit',
-        'name' => 'installation_unit[]'
+        'name' => 'installation_unit[]',
+        'onkeyup' => 'restrictNumberOnly(this);'
       ),
       '#prefix' => '<td>',
       '#suffix' => '</td>',
@@ -212,14 +246,15 @@ function update_content($form, &$form_state, $params){
         'class' => array("custom-select"),  
         'id' => 'installation-total',
         'name' => 'installation_total[]',
-        'onkeyup' => 'installationTotalAction(this);'
+        'onkeyup' => 'installationTotalAction(this);',
+        'readonly' => 'true',
       ),
-      '#prefix' => '<td>',
+      '#prefix' => '<td><span id="installation-total-item">'. number_format(floatval($installation['installation_total']),2) .'</span>',
       '#suffix' => '</td>',
       '#value' => $installation['installation_total']
     );
-    
-    $form['installation_remove'] =  array(
+
+    $form['installation_remove' . $key] =  array(
        '#type' => 'markup',
        '#markup' => '<td><a href="#" id="remove-installation" onclick="return removeInstallationItem(this);">Remove</a></td>'
     );
@@ -238,11 +273,14 @@ function update_content($form, &$form_state, $params){
      '#type' => 'markup',
      '#markup' => '<a href="#" id="add-installation">Add Installation</a>'
   );
-  
-  
-  $form['total_cost'] =  array(
+  $form['installation_cost'] =  array(
      '#type' => 'markup',
-     '#markup' => '<div class="installation-cost"><h2>Installation Cost</h2><h2 class="total-cost">0.0</h2></div>'
+     '#markup' => '<div class="installation-cost"><h2>Total Installation Amount</h2><h2 class="total-cost">0.0</h2></div>'
+  );
+  
+  $form['grand_total_cost'] =  array(
+     '#type' => 'markup',
+     '#markup' => '<div class="grand-total-cost"><h2>Total Contract Amount</h2><h2 class="total-cost">0.0</h2></div>'
   );
   
   $form['work_scope'] = array(
@@ -253,6 +291,11 @@ function update_content($form, &$form_state, $params){
     '#value' => isset($quotation_details->field_scope_of_work['und']) ? $quotation_details->field_scope_of_work['und'][0]['value'] : '',
     '#prefix' => '<p>',
     '#suffix' => '</p>',
+  );
+  $form['show_work_scope'] = array(
+    '#type' => 'checkbox', 
+    '#title' => 'Show Scope of Work', 
+    '#default_value' => isset($quotation_details->field_show_work_scope['und']) ? $quotation_details->field_show_work_scope['und'][0]['value'] : ''
   );
   
   $form['terms_and_conditions'] = array(
@@ -265,6 +308,12 @@ function update_content($form, &$form_state, $params){
     '#suffix' => '</p>',
   );
   
+  $form['show_terms_and_conditions'] = array(
+    '#type' => 'checkbox', 
+    '#title' => 'Show Terms and Conditions', 
+    '#default_value' => isset($quotation_details->field_show_terms_and_conditions['und']) ? $quotation_details->field_show_terms_and_conditions['und'][0]['value'] : ''
+  );
+  
   $form['exclusion'] = array(
     '#type' => 'text_format',
     '#format' => 'full_html',
@@ -273,6 +322,12 @@ function update_content($form, &$form_state, $params){
     '#value' => isset($quotation_details->field_exclusion['und']) ? $quotation_details->field_exclusion['und'][0]['value'] : '',
     '#prefix' => '<p>',
     '#suffix' => '</p>',
+  );
+  
+  $form['show_exclusion'] = array(
+    '#type' => 'checkbox', 
+    '#title' => 'Show Exclusion', 
+    '#default_value' => isset($quotation_details->field_show_exclusion['und']) ? $quotation_details->field_show_exclusion['und'][0]['value'] : ''
   );
   
   $form['warranty'] = array(
@@ -285,6 +340,12 @@ function update_content($form, &$form_state, $params){
     '#suffix' => '</p>',
   );
   
+  $form['show_warranty'] = array(
+    '#type' => 'checkbox', 
+    '#title' => 'Show Warranty', 
+    '#default_value' => isset($quotation_details->field_show_warranty['und']) ? $quotation_details->field_show_warranty['und'][0]['value'] : ''
+  );
+  
   $form['conclusion'] = array(
     '#type' => 'text_format',
     '#format' => 'full_html',
@@ -293,6 +354,12 @@ function update_content($form, &$form_state, $params){
     '#value' => isset($quotation_details->field_conclusion['und']) ? $quotation_details->field_conclusion['und'][0]['value'] : '',
     '#prefix' => '<p>',
     '#suffix' => '</p>',
+  );
+  
+  $form['show_conclusion'] = array(
+    '#type' => 'checkbox', 
+    '#title' => 'Show Conclusion', 
+    '#default_value' => isset($quotation_details->field_show_conclusion['und']) ? $quotation_details->field_show_conclusion['und'][0]['value'] : ''
   );
 
   $form['submit'] = array(
@@ -320,6 +387,7 @@ function update_content_submit($form, &$form_state){
     foreach($input['installation_location'] as $key => $data){
       $installation_details[$key]['installation_location'] = $data;
       $installation_details[$key]['installation_description'] = $input['installation_description'][$key];
+      $installation_details[$key]['installation_qty'] = $input['installation_qty'][$key];
       $installation_details[$key]['installation_unit'] = $input['installation_unit'][$key];
       $installation_details[$key]['installation_total'] = $input['installation_total'][$key];
     }
@@ -341,15 +409,25 @@ function update_content_submit($form, &$form_state){
     }
     
     
+    
+    
     $node->body['und'][0]['value'] = $content;
+    $node->field_header['und'][0]['value'] = $input['header']['value'];
     $node->field_aircons_details['und'][0]['value'] = serialize($aircon_details_array);
     $node->field_installation_details['und'][0]['value'] = serialize($installation_details);
     $node->field_scope_of_work['und'][0]['value'] = $input['work_scope']['value'];
     $node->field_terms_and_conditions['und'][0]['value'] = $input['terms_and_conditions']['value'];
     $node->field_exclusion['und'][0]['value'] = $input['exclusion']['value'];
     $node->field_warranty['und'][0]['value'] = $input['warranty']['value'];
-    $node->field_conclusion['und'][0]['value'] = $input['conclusion']['value'];  
-    $node->body['und'][0]['value'] = $content; 
+    $node->field_conclusion['und'][0]['value'] = $input['conclusion']['value']; 
+    $node->field_show_work_scope['und'][0]['value'] = $input['show_work_scope'];
+    $node->field_show_terms_and_conditions['und'][0]['value'] = $input['show_terms_and_conditions'];
+    $node->field_show_exclusion['und'][0]['value'] = $input['show_exclusion'];
+    $node->field_show_warranty['und'][0]['value'] = $input['show_warranty'];
+    $node->field_show_conclusion['und'][0]['value'] = $input['show_conclusion'];
+    $node->body['und'][0]['value'] = $content;
+    
+    //drupal_set_message('<pre>' . print_r($_POST,true) . '</pre>');
     node_save($node);
     drupal_set_message('Quotation Updated');
      

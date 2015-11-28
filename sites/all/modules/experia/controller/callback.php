@@ -58,12 +58,14 @@ function experia_quotation_preview_pdf($node){
      || "Approved" == $node->field_status['und'][0]['value']){
     require_once(dirname(__FILE__).'/../library/html2pdf/html2pdf.class.php');
     try
-    { 
+    {
+      
       $html2pdf = new HTML2PDF('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
       //$html2pdf->setModeDebug();
       $html2pdf->setDefaultFont('Arial');
       $html2pdf->writeHTML($node->body['und'][0]['value']);
       $html2pdf->Output($node->title .'.pdf');
+      //echo $node->body['und'][0]['value'];
     }
     catch(HTML2PDF_exception $e) {
       echo $e;

@@ -4,7 +4,7 @@ function quotation_default_values($form, &$form_state){
   $form = array();
   $form['work_scope'] = array(
     '#type' => 'text_format',
-    '#format' => 'plain_text',
+    '#format' => 'full_html',
     '#title' => 'Scope of Work',
     '#wysiwyg' => true,
     '#value' => variable_get('work_scope',''),
@@ -24,7 +24,7 @@ function quotation_default_values($form, &$form_state){
   
   $form['terms_and_conditions'] = array(
     '#type' => 'text_format',
-    '#format' => 'plain_text',
+    '#format' => 'full_html',
     '#title' => 'Terms and Conditions',
     '#wysiwyg' => true,
     '#value' => variable_get('terms_and_conditions',''),
@@ -34,7 +34,7 @@ function quotation_default_values($form, &$form_state){
   
   $form['exclusion'] = array(
     '#type' => 'text_format',
-    '#format' => 'plain_text',
+    '#format' => 'full_html',
     '#title' => 'Exclusion',
     '#wysiwyg' => true,
     '#value' =>  variable_get('exclusion',''),
@@ -44,7 +44,7 @@ function quotation_default_values($form, &$form_state){
   
   $form['warranty'] = array(
     '#type' => 'text_format',
-    '#format' => 'plain_text',
+    '#format' => 'full_html',
     '#title' => 'Warranty',
     '#wysiwyg' => true,
     '#value' => variable_get('warranty',''),
@@ -54,7 +54,7 @@ function quotation_default_values($form, &$form_state){
   
   $form['conclusion'] = array(
     '#type' => 'text_format',
-    '#format' => 'plain_text',
+    '#format' => 'full_html',
     '#title' => 'Conclusion',
     '#wysiwyg' => true,
     '#value' => variable_get('conclusion',''),

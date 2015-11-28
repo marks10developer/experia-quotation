@@ -1,32 +1,70 @@
 var $ = jQuery;
 $(document).ready(function(){
   
-  updateTotalCost();
+  updateTotalCost(); 
+  if ($('a#remove-installation').length == 1) {
+    $('a#remove-installation').hide();
+  }else{
+    $('a#remove-installation').show();
+  }
   
   $('select#aircon-quantity').change(function(){
     calculateSubTotalAction(this);
   });
   
-  $('input#aircon-discount-percentage').on('keyup',function(){
-    var value = 0;
+  $('select#installation-qty').change(function(){
+      var index = $(this).index('select#installation-qty');
+      var amount = $('#installation-table #installation-unit').eq(index).val();
+      calculateInstallationQtyAndAmt($(this).val(),amount,index);
+  });
+  
+  $('input#installation-unit').keyup(function(){
+      var index = $(this).index('input#installation-unit'); 
+      var qty = $('#installation-table select#installation-qty').eq(index).val();
+      calculateInstallationQtyAndAmt(qty,$(this).val(),index);
+  });
+  
+  $('select#aircon-discount-percentage').on('change',function(){
+    /*var value = 0;
     if (!isNaN($(this).val())) {
       value = parseInt($(this).val());
     }
     
     if (value > parseInt($(this).attr('maxvalue'))) {
       $(this).val($(this).attr('maxvalue'));
-    }
-    restrictNumberOnly(this);
+    }*/
+    //restrictNumberOnly(this);
     calculateSubTotalAction(this);
   });
   
   $('select#aircon-quantity').trigger('change');
-  $('input#aircon-discount-percentage').trigger('keyup');
+  $('select#aircon-discount-percentage').trigger('change');
   
   $('#add-installation').on('click',function(e){
     e.preventDefault();
     var new_item = '<tr id="installation-items">' + $('#installation-items:first').html() + '</tr>';
-    $('#installation-table').append( new_item ); 
+    
+    $('#installation-table').append( new_item );
+    if ($('form').attr('id') == 'quotation-step-2') {
+      $('#installation-table').find('span#installation-total-item:last').html('0.00');
+    }
+    
+    
+    $('select#installation-qty').change(function(){
+      var index = $(this).index('select#installation-qty');
+      var amount = parseInt($('#installation-table #installation-unit').eq(index).val());
+      calculateInstallationQtyAndAmt($(this).val(),amount,index);
+    });
+    
+    $('input#installation-unit').keyup(function(){
+        var index = $(this).index('input#installation-unit');
+       
+        var qty = $('#installation-table select#installation-qty').eq(index).val();
+        calculateInstallationQtyAndAmt(qty,$(this).val(),index);
+    });
+    
+    $('#installation-table #installation-total').trigger('keyup'); 
+    $('a#remove-installation').show(); 
   });
   
   
@@ -60,13 +98,24 @@ $(document).ready(function(){
   });
 });
 
+function calculateInstallationQtyAndAmt(qty,amount,index) {
+  var quantity = parseFloat(qty);
+  var item_amount = parseFloat(amount);
+  var total = quantity * item_amount; 
+  
+  $('#installation-table #installation-total').eq(index).val(total);
+  $('#installation-table #installation-total-item').eq(index).text(total.formatMoney(2,'.',','));
+  $('#installation-table #installation-total').eq(index).trigger('keyup');
+}  
+
+
 function calculateSubTotalAction(elem) {
     var quantity = parseInt($(elem).parents('tr').find('select#aircon-quantity').val());
     var discount_pct = 0;
     var price = parseFloat($(elem).parents('tr').find('span#srp').attr('data'));
     
-    if (!isNaN($(elem).parents('tr').find('input#aircon-discount-percentage').val()) && $(elem).parents('tr').find('input#aircon-discount-percentage').val() != '') {
-      discount_pct = parseInt($(elem).parents('tr').find('input#aircon-discount-percentage').val());
+    if (!isNaN($(elem).parents('tr').find('select#aircon-discount-percentage').val()) && $(elem).parents('tr').find('select#aircon-discount-percentage').val() != '') {
+      discount_pct = parseInt($(elem).parents('tr').find('select#aircon-discount-percentage').val());
     }
 
     var discounted_price = price - (price * (discount_pct / 100));
@@ -74,7 +123,7 @@ function calculateSubTotalAction(elem) {
     $(elem).parents('tr').find('span#discounted').text(discounted_price.formatMoney(2,'.',','));
     $(elem).parents('tr').find('span#discounted').attr('data',discounted_price);
     
-    $(elem).parents('tr').find('span#total').text(total.formatMoney(2,'.',','));
+    $(elem).parents('tr').find('span#total').text(total.formatMoney(2,'.',',')); 
     $(elem).parents('tr').find('span#total').attr('data',total);
     updateTotalCost();
 }
@@ -100,21 +149,33 @@ function restrictNumberOnly(elem){
 
 function updateTotalCost() {
   var total = 0;
+  var supply_cost = 0;
+  var installation_cost = 0;
   $('span#total').each(function(i,o){
     total += parseFloat($(o).attr('data'));
+    supply_cost += parseFloat($(o).attr('data'));
   });
   
   $('input#installation-total').each(function(i,o){
     if ($(o).val() != "") {
       total += parseFloat($(o).val());
+      installation_cost += parseFloat($(o).val());
     } 
   });
   
-  $('.installation-cost .total-cost').text( total.formatMoney(2,'.',',') );
+  $('.supply-cost .total-cost').text( supply_cost.formatMoney(2,'.',',') );
+  $('.installation-cost .total-cost').text( installation_cost.formatMoney(2,'.',',') );
+  $('.grand-total-cost .total-cost').text( total.formatMoney(2,'.',',') );
 }
 
 function removeInstallationItem(elem){
   $(elem).parents('tr#installation-items').remove();
+  $('#installation-table #installation-total').trigger('keyup');
+  if ($('a#remove-installation').length == 1) {
+    $('a#remove-installation').hide();
+  }else{
+    $('a#remove-installation').show();
+  }
   return false;
 }
 

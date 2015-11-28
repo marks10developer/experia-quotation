@@ -2,9 +2,10 @@
 <?php global $user; ?>
 <html>
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
       .quotation-html{
-        width: 600px;
+        width: 100%;
       }
       table{
         width: 100%;
@@ -60,24 +61,25 @@
   To comply with your requirements, we are herewith submitting our proposal for the above subject as follows:<br />
   <br />
   <h4>ITEM I: SUPPLY</h4>
-  <table border="1" class="supply-items" width="100%">
+  <table border="1" class="supply-items">
     <tr>
-      <th>QTY</th>
-      <th>DESCRIPTION</th>
-      <th>MODEL</th>
-      <th>SRP</th>
-      <th>DISCOUNTED PRICE</th>
-      <th>TOTAL</th>
+      <th style="width:20px">QTY</th>
+      <th style="width:220px">DESCRIPTION</th>
+      <th style="width:50px">MODEL</th>
+      <th style="width:80px">SRP</th>
+      <th style="width:80px">DISCOUNTED PRICE</th>
+      <th style="width:80px">TOTAL</th>
     </tr>
   <?php
     $grand_total = 0;
     foreach($_POST['aircon_quantity'] as $id => $quantity){
       $aircon_details = node_load($id);
       $model = isset($aircon_details->field_model_number['und']) ? $aircon_details->field_model_number['und'][0]['value'] : '';
-      $brand_id = isset($aircon_details->field_brand['und']) ? $aircon_details->field_brand['und'][0]['value'] : '';
-      $brand_load = node_load($brand_id);
-      $price = (float) $aircon_details->field_price['und'][0]['value'];
-      $discount = (float) $brand_load->field_discount['und'][0]['value'];
+      //$brand_id = isset($aircon_details->field_brand['und']) ? $aircon_details->field_brand['und'][0]['value'] : '';
+      //$brand_load = node_load($brand_id);
+      $price = (float) $aircon_details->field_price['und'][0]['value']; 
+      //$discount = (float) $brand_load->field_discount['und'][0]['value'];
+      $discount = (int) $_POST['aircon_discount_percentage'][$id]; 
       $discount_price = $price - ($price * ($discount / 100));
       $total = $discount_price * intval($quantity);
       $grand_total += $total;
@@ -95,7 +97,7 @@
   <table>
     <tr>
       <td width="700" style="text-align: right;">
-        <h4>SUPPLY COST: <?php echo number_format($grand_total ,2); ?></h4>
+        <h4>TOTAL SUPPLY AMOUNT: <?php echo number_format($grand_total ,2); ?></h4>
       </td> 
     </tr>
   </table>
@@ -105,10 +107,10 @@
   <h4>ITEM I: INSTALLATION</h4>
   <table border="1" class="installation-items">
     <tr>
-      <th>LOCATION</th>
-      <th>DESCRIPTION</th>
-      <th>UNIT</th>
-      <th>TOTAL</th> 
+      <th style="width:200px">LOCATION</th>
+      <th style="width:200px">DESCRIPTION</th>
+      <th style="width:100px">UNIT</th>
+      <th style="width:100px">TOTAL</th> 
     </tr>
   <?php
     $installation_cost = 0;
@@ -128,7 +130,7 @@
   <table>
     <tr>
       <td width="700" style="text-align: right;">
-        <h4>INSTALLATION COST: <?php echo number_format($installation_cost ,2); ?></h4>
+        <h4>TOTAL INSTALLATION AMOUNT: <?php echo number_format($installation_cost ,2); ?></h4>
       </td> 
     </tr>
   </table>
@@ -137,32 +139,32 @@
   <table>
     <tr>
       <td width="700" style="text-align: right;">
-        <h3>TOTAL COST: <?php echo number_format($grand_total,2); ?></h3>
+        <h3>TOTAL CONTRACT AMOUNT: <?php echo number_format($grand_total,2); ?></h3>
       </td> 
     </tr>
   </table>
   
-  <?php if(!empty($_POST['work_scope']['value'])){ ?>
+  <?php if(!empty($_POST['work_scope']['value']) && isset($_POST['show_work_scope'])){ ?>
     <h4>SCOPE OF WORK:</h4>
     <?php echo $_POST['work_scope']['value']; ?>
   <?php } ?>
   <br />
-  <?php if(!empty($_POST['terms_and_conditions']['value'])){ ?>
+  <?php if(!empty($_POST['terms_and_conditions']['value']) && isset($_POST['show_terms_and_conditions'])){ ?>
     <h4>TERMS AND CONDITIONS:</h4>
     <?php echo $_POST['terms_and_conditions']['value']; ?>
   <?php } ?>
   
-  <?php if(!empty($_POST['exclusion']['value'])){ ?>
+  <?php if(!empty($_POST['exclusion']['value']) && isset($_POST['show_exclusion'])){ ?>
     <h4>EXCLUSION:</h4>
     <?php echo $_POST['exclusion']['value']; ?>
   <?php } ?>
   
-  <?php if(!empty($_POST['warranty']['value'])){ ?>
+  <?php if(!empty($_POST['warranty']['value']) && isset($_POST['show_warranty'])){ ?>
   <h4>WARRANTY:</h4>
   <?php echo $_POST['warranty']['value']; ?>
   <?php } ?>
   
-  <?php if(!empty($_POST['conclusion']['value'])){ ?>
+  <?php if(!empty($_POST['conclusion']['value']) && isset($_POST['show_conclusion'])){ ?>
   <?php echo $_POST['conclusion']['value']; ?>
   <?php } ?>
 </div>

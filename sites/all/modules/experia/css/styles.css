@@ -1,6 +1,10 @@
-.installation-cost{
+.grand-total-cost, .installation-cost, .supply-cost{
   width: 100%;
   text-align: right;
+}
+.grand-total-cost{
+  background: #ccc;
+  padding: 10px; 
 }
 
 .views-widget select#edit-type option[value="quotation"],
@@ -11,4 +15,11 @@ form.node-quotation-form .field-name-field-warranty,
 form.node-quotation-form .field-name-field-conclusion
 {
   display: none !important;  
-} 
+}
+input#installation-total{
+  border: none;
+  font-family: normal 13px/1.538em Open Sans, "Segoe UI", "Helvetica", sans-serif;
+}
+input#installation-total{
+  display: none;
+}
