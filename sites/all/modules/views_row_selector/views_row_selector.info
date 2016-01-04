@@ -1,0 +1,14 @@
+name = Views Row Selector
+description = Allows user to select rows by checkbox
+package = Views
+dependencies[] = views
+
+core = 7.x
+
+files[] = views/views_row_selector_field_handler_row_selector.inc
+; Information added by drupal.org packaging script on 2013-01-25
+version = "7.x-1.0-alpha1"
+core = "7.x"
+project = "views_row_selector"
+datestamp = "1359119926"
+

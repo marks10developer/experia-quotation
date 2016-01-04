@@ -1,0 +1,212 @@
+<?php
+
+/**
+ * Gets the selector field if it exists on the passed-in view.
+ *
+ * @return
+ *  The field object if found. Otherwise, FALSE.
+ */
+function _views_row_selector_get_field($view) {
+  foreach ($view->field as $field_name => $field) {
+    if ($field instanceof views_row_selector_field_handler_row_selector) {
+      // Add in the view object for convenience.
+      $field->view = $view;
+      return $field;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Implements hook_views_form_substitutions().
+ */
+function views_row_selector_views_form_substitutions() {
+  // Views check_plains the column label, so do the same here in order for the
+  // replace operation to succeed.
+  $select_all_placeholder = check_plain('<!--views-row-selector-select-all-->');
+  $select_all = array(
+    '#type' => 'checkbox',
+    '#default_value' => FALSE,
+    '#attributes' => array('class' => array('views-row-selector-table-select-all')),
+  );
+  return array(
+    $select_all_placeholder => drupal_render($select_all),
+  );
+}
+
+
+/**
+ * Returns the 'select all' div that gets inserted above the view results
+ * for non-table style plugins.
+ *
+ * The actual insertion is done by JS, matching the degradation behavior
+ * of Drupal core (no JS - no select all).
+ */
+function theme_views_row_selector_select_all($variables) {
+  $form = array();
+  $form['select_all'] = array(
+    '#type' => 'fieldset',
+    '#attributes' => array('class' => array('views-row-selector-fieldset-select-all')),
+  );
+  $form['select_all']['this_page'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Select all items on this page'),
+    '#default_value' => '',
+    '#attributes' => array('class' => array('views-row-selector-select-this-page')),
+  );
+
+  $output = '<div class="views-row-selector-select-all-markup">';
+  $output .= drupal_render($form);
+  $output .= '</div>';
+
+  return $output;
+}
+
+
+
+
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function views_row_selector_form_alter(&$form, &$form_state, $form_id) {
+  if (strpos($form_id, 'views_form_') === 0) {
+    $field = _views_row_selector_get_field($form_state['build_info']['args'][0]);
+  }
+  // This form isn't used by Views Send.
+  if (empty($field)) {
+    return;
+  }
+
+  $form['selected_rows'] = array(
+    '#type' => 'hidden',
+    '#attributes' => array('class' => array('views-row-selector-fieldset-selected-rows')),
+  );
+
+  // Allow Views Send to work when embedded using views_embed_view(), or in a block.
+  if (empty($field->view->override_path)) {
+    if (!empty($field->view->preview) || $field->view->display_handler instanceof views_plugin_display_block) {
+      $field->view->override_path = $_GET['q'];
+    }
+  }
+  $query = drupal_get_query_parameters($_GET, array('q'));
+  $form['#action'] = url($field->view->get_url(), array('query' => $query));
+  //unset($form['actions']);
+
+  // Cache the built form to prevent it from being rebuilt prior to validation
+  // and submission, which could lead to data being processed incorrectly,
+  // because the views rows (and thus, the form elements as well) have changed
+  // in the meantime. Matching views issue: http://drupal.org/node/1473276.
+  $form_state['cache'] = TRUE;
+
+  // Add the custom CSS for all steps of the form.
+  $form['#attached']['css'][] = drupal_get_path('module', 'views_row_selector') . '/views_row_selector.css';
+
+  if ($form_state['step'] == 'views_form_views_form') {
+    $form['#prefix'] = '<div class="views-row-selector-selection-form">';
+    $form['#suffix'] = '</div>';
+
+    // Add the custom JS for this step of the form.
+    $form['#attached']['js'][] = drupal_get_path('module', 'views_row_selector') . '/views_row_selector.js';
+
+    // Adds the "select all" functionality for non-table style plugins
+    // if the view has results.
+    if (!empty($field->view->result) && !($field->view->style_plugin instanceof views_plugin_style_table)) {
+      $form['select_all_markup'] = array(
+        '#type' => 'markup',
+        '#markup' => theme('views_row_selector_select_all'),
+      );
+    }
+  }
+}
+
+// === Hook implementations ====================================================
+
+
+/**
+ * Implements hook_permission().
+ */
+function __views_row_selector_permission() {
+  $perms = array(
+    'administer views_row_selector' => array(
+      'title' => t('Administer mass mail with Views'),
+      'description' => t('Configure sending of e-mails to a list created with Views.'),
+    ),
+    'mass mailing with views_row_selector' => array(
+      'title' => t('Send mass mail with Views'),
+      'description' => t('Send e-mails to a list created with Views.'),
+    ),
+  );
+  if (views_row_selector_MIMEMAIL) {
+    $perms['attachments with views_row_selector'] = array(
+      'title' => t('Use attachments with Views Send'),
+      'description' => t('Attach files to e-mails sent with Views Send.'),
+    );
+  }
+  return $perms;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function views_row_selector_theme($existing, $type, $theme, $path) {
+  return array(
+    'views_row_selector_select_all' => array(
+      'variables' => array(),
+    ),
+    'views_row_selector_token_help' => array(
+      'arguments' => array('tokens' => array()),
+    ),
+  );
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function views_row_selector_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'views_row_selector') . '/views',
+  );
+}
+
+
+/**
+ * Find the value for a given "field" in a Views result (row).
+ *
+ * If the "field" is a proper field, we check the raw array.
+ * First we look for "value" and then for a specific key if given.
+ * Then we check if there is just one key.
+ */
+function _views_row_selector_get_from_views_result($views_result, $field, $key=FALSE) {
+  if (empty($field)) {
+    return FALSE;
+  }
+  $value = FALSE;
+  if (substr($field, 0, 6) == 'field_') {
+    $views_value = $views_result->{'field_' . $field};
+    // Abort immediately if the field has no content.
+    if (count($views_value) == 0) {
+      return FALSE;
+    }
+    if (isset($views_value[0]['raw']['value'])) {
+      $value = $views_value[0]['raw']['value'];
+    }
+    else {
+      if ($key && isset($views_value[0]['raw'][$key])) {
+        $value = $views_value[0]['raw'][$key];
+      }
+      if (!$value && count($views_value[0]['raw']) == 1) {
+        $value = array_pop($views_value[0]['raw']);
+      }
+    }
+  }
+  else {
+    $value = $views_result->{$field};
+  }
+  return $value;
+}
+
+// === Theming functions =======================================================
+

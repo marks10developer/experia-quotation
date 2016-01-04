@@ -1,0 +1,63 @@
+.views-row-selector-select-all-markup {
+  display: none;
+}
+
+/* "Select all" for table styles. */
+.views-row-selector-selection-form thead .form-type-checkbox {
+  margin: 0;
+}
+.views-row-selector-table-select-all {
+  display: none;
+}
+.views-table-row-select-all {
+  display: none;
+}
+.views-table-row-select-all td {
+  text-align: center;
+}
+.views-row-selector-table-select-this-page {
+  margin: 0 !important;
+  padding: 2px 5px !important;
+}
+
+/* Generic "select all" */
+.views-row-selector-fieldset-select-all {
+  text-align: center;
+  width: 210px;
+  padding: 0.6em 0;
+}
+.views-row-selector-fieldset-select-all .form-item {
+  margin-bottom: 0;
+}
+.views-row-selector-fieldset-select-all div {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+
+form.views-row-selector-preview label {
+  float: left;
+  clear: both;
+  padding: 2px;
+}
+
+form.views-row-selector-preview .views-row-selector-preview-value {
+  margin-left: 100px;
+  overflow: auto;
+  border: 1px solid #bbbbbb;
+  padding: 2px;
+}
+
+#views-row-selector-preview-to {
+  height: 50px;
+}
+
+#views-row-selector-preview-message {
+  height: 150px;
+  white-space:pre;
+}
+
+#views-row-selector-preview-headers, #views-row-selector-preview-attachments {
+  height: 80px;
+  font-family: monospace;
+}

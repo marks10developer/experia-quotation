@@ -40,6 +40,12 @@ function experia_menu(){
     'type' => MENU_NORMAL_ITEM,
   );
   
+  $items['experia/selected-aircons'] = array(
+    'title' => 'Selected Aircon',
+    'page callback' => 'experia_selected_aircons',
+    'access arguments' => array('access quotation'),
+    'type' => MENU_NORMAL_ITEM,
+  );
   
   $items['experia/quotation/preview/pdf/%node'] = array(
     'title' => 'Quotations Preview PDF',

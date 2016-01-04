@@ -1,6 +1,7 @@
 <?php
 function experia_quotation(){
   $params = array();
+  $_SESSION['selected-aircons'] = array();
   return theme('experia_quotation',$params);
 }
 
@@ -11,8 +12,12 @@ function experia_quotation_step_1(){
 
 function experia_quotation_step_2(){ 
   if(isset($_POST)){
+    $selected_aircons = array();
+    if(isset($_SESSION['selected-aircons'])){
+       $selected_aircons = $_SESSION['selected-aircons'];
+    }
     $params = array(
-      'aircons' => isset($_REQUEST['aircons']) ? $_REQUEST['aircons'] : array(),
+      'aircons' => $selected_aircons,
     );
     return theme('experia_quotation_step_2',$params);
     
@@ -48,6 +53,7 @@ function experia_quotation_step_3(){
       echo $e;
       exit;
     }
+    
 }
 
 
@@ -74,6 +80,23 @@ function experia_quotation_preview_pdf($node){
   }else{
     echo '';
   }
+}
+
+function experia_selected_aircons(){ 
+  if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    if(isset($_POST['selected']) && isset($_POST['nid'])){ 
+      if($_POST['selected'] == "true"){
+         if(($key = array_search($_POST['nid'], $_SESSION['selected-aircons'])) === false) {
+          $_SESSION['selected-aircons'][] = $_POST['nid'];
+         }
+      }else{ 
+        if(($key = array_search($_POST['nid'], $_SESSION['selected-aircons'])) !== false) {
+            unset($_SESSION['selected-aircons'][$key]);
+        }
+      }
+    }
+  }
+  var_dump($_SESSION);
 }
 
 

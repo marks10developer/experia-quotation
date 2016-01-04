@@ -96,6 +96,23 @@ $(document).ready(function(){
       }
     });
   });
+  
+  $('input#aircons-item').change(function(){
+    $('input#aircons-item').attr('disabled',true);
+    $(this).attr('disabled',false);
+    $.ajax({
+      'url' : '/experia/selected-aircons',
+      'type' : 'POST',
+      'data' : {
+        'selected' : $(this).is(':checked'),
+        'nid' : $(this).val()
+      },
+      'success': function(e){
+        $('input#aircons-item').attr('disabled',false);
+        console.log(e);
+      }
+    });
+  });
 });
 
 function calculateInstallationQtyAndAmt(qty,amount,index) {
