@@ -8,6 +8,7 @@
 }
 
 .views-widget select#edit-type option[value="quotation"],
+.views-widget select#edit-type option[value="All"],
 form.node-quotation-form .field-name-field-scope-of-work,
 form.node-quotation-form .field-name-field-terms-and-conditions,
 form.node-quotation-form .field-name-field-exclusion,

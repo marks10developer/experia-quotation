@@ -185,13 +185,27 @@ function experia_form_alter(&$form, &$form_state, $form_id)  {
           $(".form-item-field-firstname-und-0-value, .form-item-field-lastname-und-0-value").hide();
         }
       }
-    ','inline');
-    
-    
+    ','inline'); 
+  }
+  else if($form_id == 'views_form_admin_views_node_system_1'){
+    if(isset($_GET['type']) && $_GET['type'] != 'aircons'){
+      drupal_add_js('$(document).ready(function(){
+        $("table th.views-field-php").hide();
+        $("table td.views-field-php").hide();
+        
+        $("table th.views-field-field-item-code").hide();
+        $("table td.views-field-field-item-code").hide();
+        
+        $("table th.views-field-field-capacity").hide();
+        $("table td.views-field-field-capacity").hide();
+        
+        $("table th.views-field-field-capacity-type").hide();
+        $("table td.views-field-field-capacity-type").hide();
+        
+      });','inline');
+    }
     
   }
-  
-    
 }
 
 function experia_user_data_update_submit($form, &$form_state) {
