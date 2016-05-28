@@ -32,10 +32,19 @@
       .header ul{
         list-style-type: none;
       }
+      .table-header{
+        background: #538dd5;
+        text-align: center;
+        padding: 10px 0;
+      }
     </style>
   </head>
 <body>
 <div class="quotation-html">
+  <div class="cover">
+    <img src="<?php echo $base_url . '/' . drupal_get_path('module','experia') . '/images/cover.jpg' ?>" width="720" height="960"  />
+  </div>
+  
  <?php $customer_details = node_load($_POST['customer']); ?>
   <table class="header">
     <tr>
@@ -57,18 +66,23 @@
   <b>SUBJECT: </b> Proposal for the Supply and Installation of Air-conditioning Units. <br />
   <br />
   <br />
-  Dear Sir/Madam, <br /><br />
-  To comply with your requirements, we are herewith submitting our proposal for the above subject as follows:<br />
-  <br />
-  <h4>ITEM I: SUPPLY</h4>
-  <table border="1" class="supply-items">
+  <table width="720"> 
+    <tr>
+      <td> <?php echo $_POST['the_contents']['value']; ?></td>
+    </tr>
+  </table>
+  <br /> 
+  <table border="1" class="supply-items" width="720">
+    <tr>
+      <th colspan="100" class="table-header">ITEM I: SUPPLY</th>
+    </tr>
     <tr>
       <th style="width:20px">QTY</th>
       <th style="width:220px">DESCRIPTION</th>
       <th style="width:50px">MODEL</th>
-      <th style="width:80px">SRP</th>
-      <th style="width:80px">DISCOUNTED PRICE</th>
-      <th style="width:80px">TOTAL</th>
+      <th style="width:90px">SRP</th>
+      <th style="width:90px">DISCOUNTED PRICE</th>
+      <th style="width:90px">TOTAL</th>
     </tr>
   <?php
     $grand_total = 0;
@@ -104,8 +118,11 @@
 
   <br /> 
   <?php if(!empty($_POST['installation_total'][0])){ ?>
-  <h4>ITEM I: INSTALLATION</h4>
+  
   <table border="1" class="installation-items">
+    <tr>
+      <th colspan="100" class="table-header">ITEM I: INSTALLATION</th>
+    </tr>
     <tr>
       <th style="width:200px">LOCATION</th>
       <th style="width:200px">DESCRIPTION</th>
@@ -144,33 +161,66 @@
     </tr>
   </table>
   
-  <?php if(!empty($_POST['work_scope']['value']) && isset($_POST['show_work_scope'])){ ?>
-    <h4>SCOPE OF WORK:</h4>
-    <?php echo $_POST['work_scope']['value']; ?>
+  <?php if(!empty($_POST['work_scope']['value']) && isset($_POST['show_work_scope'])){ ?> 
+    <table width="720">
+      <tr>
+        <th border="1" colspan="100" class="table-header">SCOPE OF WORK:</th>
+      </tr>
+      <tr>
+        <td><?php echo $_POST['work_scope']['value']; ?></td>
+      </tr>
+    </table>
+    
   <?php } ?>
   <br />
   <?php if(!empty($_POST['terms_and_conditions']['value']) && isset($_POST['show_terms_and_conditions'])){ ?>
-    <h4>TERMS AND CONDITIONS:</h4>
-    <?php echo $_POST['terms_and_conditions']['value']; ?>
+    
+    <table width="720">
+      <tr>
+        <th border="1" colspan="100" class="table-header">TERMS AND CONDITIONS:</th>
+      </tr>
+      <tr>
+        <td><?php echo $_POST['terms_and_conditions']['value']; ?></td>
+      </tr>
+    </table>
+    
   <?php } ?>
   
-  <?php if(!empty($_POST['exclusion']['value']) && isset($_POST['show_exclusion'])){ ?>
-    <h4>EXCLUSION:</h4>
-    <?php echo $_POST['exclusion']['value']; ?>
+  <?php if(!empty($_POST['exclusion']['value']) && isset($_POST['show_exclusion'])){ ?> 
+    <table width="720">
+      <tr>
+        <th border="1" colspan="100" class="table-header">EXCLUSION:</th>
+      </tr>
+      <tr>
+        <td><?php echo $_POST['exclusion']['value']; ?></td>
+      </tr>
+    </table>
+    
   <?php } ?>
   
   <?php if(!empty($_POST['warranty']['value']) && isset($_POST['show_warranty'])){ ?>
-  <h4>WARRANTY:</h4>
-  <?php echo $_POST['warranty']['value']; ?>
+  <table width="720">
+    <tr>
+      <th border="1" colspan="100" class="table-header">WARRANTY:</th>
+    </tr>
+    <tr>
+      <td><?php echo $_POST['warranty']['value']; ?></td>
+    </tr>
+  </table>
+  
   <?php } ?>
   
   <?php if(!empty($_POST['conclusion']['value']) && isset($_POST['show_conclusion'])){ ?>
-  <?php echo $_POST['conclusion']['value']; ?>
+  <table width="720"> 
+    <tr>
+      <td><?php echo $_POST['conclusion']['value']; ?></td>
+    </tr>
+  </table>
+  
   <?php } ?>
-</div>
-<br /> <br /> <br /> <br /> 
-
-<table>
+  
+<br /> <br /> <br /> <br /> <br /> 
+<table width="720">
   <tr>
     <td width="520">
       <p>Very Truly Yours,</p> 
@@ -191,5 +241,10 @@
     </td>
   </tr>
 </table>
+
+</div>
+
+
+
 </body>
 </html>

@@ -33,6 +33,16 @@ function update_content($form, &$form_state, $params){
         '#prefix' => '<p>',
         '#suffix' => '</p>',
     );
+    
+    $form['the_contents'] = array(
+      '#type' => 'text_format',
+      '#format' => 'full_html',
+      '#title' => 'Contents',
+      '#wysiwyg' => true,
+      '#value' => isset($quotation_details->field_the_contents['und']) ? $quotation_details->field_the_contents['und'][0]['value'] : '',
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+    );
   
     $form['table'] =  array(
       '#type' => 'markup',
@@ -413,6 +423,7 @@ function update_content_submit($form, &$form_state){
     
     $node->body['und'][0]['value'] = $content;
     $node->field_header['und'][0]['value'] = $input['header']['value'];
+    $node->field_the_contents['und'][0]['value'] = $input['the_contents']['value'];
     $node->field_aircons_details['und'][0]['value'] = serialize($aircon_details_array);
     $node->field_installation_details['und'][0]['value'] = serialize($installation_details);
     $node->field_scope_of_work['und'][0]['value'] = $input['work_scope']['value'];
@@ -425,6 +436,7 @@ function update_content_submit($form, &$form_state){
     $node->field_show_exclusion['und'][0]['value'] = $input['show_exclusion'];
     $node->field_show_warranty['und'][0]['value'] = $input['show_warranty'];
     $node->field_show_conclusion['und'][0]['value'] = $input['show_conclusion'];
+    
     $node->body['und'][0]['value'] = $content;
     
     //drupal_set_message('<pre>' . print_r($_POST,true) . '</pre>');

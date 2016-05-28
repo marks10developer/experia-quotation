@@ -155,7 +155,9 @@ function experia_form_alter(&$form, &$form_state, $form_id)  {
                    .field-name-field-aircons-details,
                    .field-name-field-installation-details,
                    .vertical-tabs,#edit-preview,#edit-delete,
-                   .form-type-checkbox
+                   .form-type-checkbox,
+                   .field-name-field-header,
+                   .field-name-field-the-contents
                    {display:none;}','inline');
     $form_state['redirect'] = '/home';
   }else if($form_id == 'customers_node_form'){

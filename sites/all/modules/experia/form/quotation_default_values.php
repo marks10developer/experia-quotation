@@ -22,6 +22,16 @@ function quotation_default_values($form, &$form_state){
       '#suffix' => '</p>',
   );
   
+  $form['the_contents'] = array(
+      '#type' => 'text_format',
+      '#format' => 'full_html',
+      '#title' => 'Contents',
+      '#wysiwyg' => true,
+      '#value' => variable_get('the_contents',''),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+  );
+  
   $form['terms_and_conditions'] = array(
     '#type' => 'text_format',
     '#format' => 'full_html',
@@ -77,5 +87,6 @@ function quotation_default_values_submit($form, &$form_state) {
   variable_set('exclusion', $input['exclusion']['value']);
   variable_set('warranty', $input['warranty']['value']);
   variable_set('conclusion', $input['conclusion']['value']);
+  variable_set('the_contents', $input['the_contents']['value']);
   drupal_set_message('Default Values Saved');
 }
