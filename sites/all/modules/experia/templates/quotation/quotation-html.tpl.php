@@ -78,8 +78,8 @@
     </tr>
     <tr>
       <th style="width:20px">QTY</th>
-      <th style="width:220px">DESCRIPTION</th>
-      <th style="width:50px">MODEL</th>
+      <th style="width:200px">DESCRIPTION</th>
+      <th style="width:70px">MODEL</th>
       <th style="width:90px">SRP</th>
       <th style="width:90px">DISCOUNTED PRICE</th>
       <th style="width:90px">TOTAL</th>
@@ -89,6 +89,7 @@
     foreach($_POST['aircon_quantity'] as $id => $quantity){
       $aircon_details = node_load($id);
       $model = isset($aircon_details->field_model_number['und']) ? $aircon_details->field_model_number['und'][0]['value'] : '';
+      $item_code = isset($aircon_details->field_item_code['und']) ? $aircon_details->field_item_code['und'][0]['value'] : '';
       //$brand_id = isset($aircon_details->field_brand['und']) ? $aircon_details->field_brand['und'][0]['value'] : '';
       //$brand_load = node_load($brand_id);
       $price = (float) $aircon_details->field_price['und'][0]['value']; 
@@ -99,12 +100,12 @@
       $grand_total += $total;
   ?>
     <tr>
-      <td><?php echo $quantity; ?></td>
-      <td><?php echo $aircon_details->title; ?></td>
-      <td><?php echo $model; ?></td>
-      <td><?php echo number_format($price,2); ?></td>
-      <td><?php echo number_format($discount_price,2); ?></td>
-      <td><?php echo number_format($total,2); ?></td>
+      <td style="width:20px;word-wrap: break-word;"><?php echo $quantity; ?></td>
+      <td style="width:200px;word-wrap: break-word;"><?php echo $aircon_details->title; ?></td>
+      <td style="width:70px;word-wrap: break-word;"><?php echo chunk_split($item_code,7,'<br >'); ?></td>
+      <td style="width:90px;word-wrap: break-word;"><?php echo number_format($price,2); ?></td>
+      <td style="width:90px;word-wrap: break-word;"><?php echo number_format($discount_price,2); ?></td>
+      <td style="width:90px;word-wrap: break-word;"><?php echo number_format($total,2); ?></td>
     </tr>
   <?php } ?>
   </table>
@@ -137,10 +138,10 @@
     
   ?>
     <tr>
-      <td><?php echo $value; ?></td>
-      <td><?php echo $_POST['installation_description'][$key]; ?></td>
-      <td><?php echo $_POST['installation_unit'][$key]; ?></td>
-      <td><?php echo number_format($_POST['installation_total'][$key],2); ?></td> 
+      <td style="width:200px;word-wrap: break-word;"><?php echo $value; ?></td>
+      <td style="width:200px;word-wrap: break-word;"><?php echo $_POST['installation_description'][$key]; ?></td>
+      <td style="width:100px;word-wrap: break-word;"><?php echo $_POST['installation_unit'][$key]; ?></td>
+      <td style="width:100px;word-wrap: break-word;"><?php echo number_format($_POST['installation_total'][$key],2); ?></td> 
     </tr>
   <?php } ?>
   </table>

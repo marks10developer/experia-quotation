@@ -56,6 +56,7 @@ function quotation_step_2($form, &$form_state, $params){
     foreach($params['aircons'] as $key => $aircon){
       $aircon_details = node_load($aircon);
       $model = isset($aircon_details->field_model_number['und']) ? $aircon_details->field_model_number['und'][0]['value'] : '';
+      $item_code = isset($aircon_details->field_item_code['und']) ? $aircon_details->field_item_code['und'][0]['value'] : '';
       $brand_id = isset($aircon_details->field_brand['und']) ? $aircon_details->field_brand['und'][0]['value'] : '';
       $brand_load = node_load($brand_id);
       $price = (float) $aircon_details->field_price['und'][0]['value'];
@@ -112,7 +113,7 @@ function quotation_step_2($form, &$form_state, $params){
 
       $form['markup_model_' . $key ] =  array(
          '#type' => 'markup',
-         '#markup' => '<span>'.$model.'</span>',
+         '#markup' => '<span>'.$item_code.'</span>',
           '#prefix' => '<td>',
           '#suffix' => '</td>',
       );
