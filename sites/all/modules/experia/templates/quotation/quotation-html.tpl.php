@@ -37,6 +37,9 @@
         text-align: center;
         padding: 10px 0;
       }
+      .brand-total{ 
+        text-align: right;
+      }
     </style>
   </head>
 <body>
@@ -71,51 +74,80 @@
       <td> <?php echo $_POST['the_contents']['value']; ?></td>
     </tr>
   </table>
-  <br /> 
+  <br />
+  
   <table border="1" class="supply-items" width="720">
     <tr>
-      <th colspan="100" class="table-header">ITEM I: SUPPLY</th>
+      <th colspan="100" class="table-header">ITEM I: EQUIPMENTS</th>
     </tr>
-    <tr>
-      <th style="width:20px">QTY</th>
-      <th style="width:200px">DESCRIPTION</th>
-      <th style="width:70px">MODEL</th>
-      <th style="width:90px">SRP</th>
-      <th style="width:90px">DISCOUNTED PRICE</th>
-      <th style="width:90px">TOTAL</th>
-    </tr>
-  <?php
-    $grand_total = 0;
-    foreach($_POST['aircon_quantity'] as $id => $quantity){
-      $aircon_details = node_load($id);
-      $model = isset($aircon_details->field_model_number['und']) ? $aircon_details->field_model_number['und'][0]['value'] : '';
-      $item_code = isset($aircon_details->field_item_code['und']) ? $aircon_details->field_item_code['und'][0]['value'] : '';
-      //$brand_id = isset($aircon_details->field_brand['und']) ? $aircon_details->field_brand['und'][0]['value'] : '';
-      //$brand_load = node_load($brand_id);
-      $price = (float) $aircon_details->field_price['und'][0]['value']; 
-      //$discount = (float) $brand_load->field_discount['und'][0]['value'];
-      $discount = (int) $_POST['aircon_discount_percentage'][$id]; 
-      $discount_price = $price - ($price * ($discount / 100));
-      $total = $discount_price * intval($quantity);
-      $grand_total += $total;
-  ?>
-    <tr>
-      <td style="width:20px;word-wrap: break-word;"><?php echo $quantity; ?></td>
-      <td style="width:200px;word-wrap: break-word;"><?php echo $aircon_details->title; ?></td>
-      <td style="width:70px;word-wrap: break-word;"><?php echo chunk_split($item_code,7,'<br >'); ?></td>
-      <td style="width:90px;word-wrap: break-word;"><?php echo number_format($price,2); ?></td>
-      <td style="width:90px;word-wrap: break-word;"><?php echo number_format($discount_price,2); ?></td>
-      <td style="width:90px;word-wrap: break-word;"><?php echo number_format($total,2); ?></td>
-    </tr>
+    <?php
+      $grand_total = 0;
+      $aircons_list = array();
+      foreach($_POST['aircon_quantity'] as $id => $quantity){
+        $aircon_details = node_load($id);
+        $brand_id = isset($aircon_details->field_brand['und']) ? $aircon_details->field_brand['und'][0]['value'] : '';
+        $brand_load = node_load($brand_id);
+        $price = (float) $aircon_details->field_price['und'][0]['value'];  
+        $discount = (int) $_POST['aircon_discount_percentage'][$id]; 
+        $discount_price = $price - ($price * ($discount / 100));
+        $total = $discount_price * intval($quantity);
+        $grand_total += $total;
+        $aircon_details->_quantity = $quantity;
+        $aircons_list[$brand_load->title][] = array(
+          'aircon_details' => $aircon_details              
+        );
+      }
+    ?>
+      
+      <?php
+      if(!empty($aircons_list)){
+        $index = 0;
+        foreach($aircons_list as $brand => $aircons){ $index++;
+      ?>
+      <tr><th colspan="20">OPTION <?php echo $index; ?> : <?php echo strtoupper($brand); ?></th></tr>
+      <tr>
+        <th style="width:20px">QTY</th>
+        <th style="width:110px">DESCRIPTION</th>
+        <th style="width:160px">MODEL</th>
+        <th style="width:90px">SRP</th>
+        <th style="width:90px">DISCOUNTED<br/>CASH PRICE</th>
+        <th style="width:90px">TOTAL</th>
+      </tr>
+      
+      <?php
+      $brand_total = 0;
+      foreach($aircons as $aircon) {
+        $aircon_details = $aircon['aircon_details']; 
+        $model = isset($aircon_details->field_model_number['und']) ? $aircon_details->field_model_number['und'][0]['value'] : '';
+        $item_code = isset($aircon_details->field_item_code['und']) ? $aircon_details->field_item_code['und'][0]['value'] : '';
+        $price = (float) $aircon_details->field_price['und'][0]['value'];  
+        $discount = (int) $_POST['aircon_discount_percentage'][$id]; 
+        $discount_price = $price - ($price * ($discount / 100));
+        $total = $discount_price * intval($aircon_details->_quantity);
+        $brand_total += $total;
+      ?>
+      <tr>
+        <td style="width:20px;word-wrap: break-word;"><?php echo $aircon_details->_quantity; ?></td>
+        <td style="width:110px;word-wrap: break-word;"><?php echo (stristr($aircon_details->title, ' ') === FALSE) ? chunk_split($aircon_details->title,20,'<br >') : $aircon_details->title; ?></td>
+        <td style="width:160px;word-wrap: break-word;"><?php echo chunk_split($item_code,20,'<br >'); ?></td>
+        <td style="width:90px;word-wrap: break-word;"><?php echo number_format($price,2); ?></td>
+        <td style="width:90px;word-wrap: break-word;"><?php echo number_format($discount_price,2); ?></td>
+        <td style="width:90px;word-wrap: break-word;"><?php echo number_format($total,2); ?></td>
+      </tr> 
+      <?php } ?>
+      <tr><th colspan="20" class="brand-total">TOTAL SUPPLY AMOUNT: <?php echo number_format($brand_total,2);?></th></tr>
+    <?php } ?>
   <?php } ?>
+
   </table>
-  <table>
+  
+  <?php /* <table>
     <tr>
       <td width="700" style="text-align: right;">
         <h4>TOTAL SUPPLY AMOUNT: <?php echo number_format($grand_total ,2); ?></h4>
       </td> 
     </tr>
-  </table>
+  </table> */ ?>
 
   <br /> 
   <?php if(!empty($_POST['installation_total'][0])){ ?>
@@ -128,7 +160,7 @@
       <th style="width:200px">LOCATION</th>
       <th style="width:200px">DESCRIPTION</th>
       <th style="width:100px">UNIT</th>
-      <th style="width:100px">TOTAL</th> 
+      <th style="width:110px">TOTAL</th> 
     </tr>
   <?php
     $installation_cost = 0;
@@ -141,27 +173,26 @@
       <td style="width:200px;word-wrap: break-word;"><?php echo $value; ?></td>
       <td style="width:200px;word-wrap: break-word;"><?php echo $_POST['installation_description'][$key]; ?></td>
       <td style="width:100px;word-wrap: break-word;"><?php echo $_POST['installation_unit'][$key]; ?></td>
-      <td style="width:100px;word-wrap: break-word;"><?php echo number_format($_POST['installation_total'][$key],2); ?></td> 
+      <td style="width:110px;word-wrap: break-word;"><?php echo number_format($_POST['installation_total'][$key],2); ?></td> 
     </tr>
   <?php } ?>
-  </table>
-  <table>
     <tr>
-      <td width="700" style="text-align: right;">
-        <h4>TOTAL INSTALLATION AMOUNT: <?php echo number_format($installation_cost ,2); ?></h4>
-      </td> 
+      <th colspan="20" style="text-align: right;">
+        TOTAL INSTALLATION AMOUNT: <?php echo number_format($installation_cost ,2); ?> 
+      </th> 
     </tr>
   </table>
+ 
   <?php } ?>
   
-  <table>
+  <?php /* <table>
     <tr>
       <td width="700" style="text-align: right;">
         <h3>TOTAL CONTRACT AMOUNT: <?php echo number_format($grand_total,2); ?></h3>
       </td> 
     </tr>
-  </table>
-  
+  </table> */ ?> 
+  <br /> 
   <?php if(!empty($_POST['work_scope']['value']) && isset($_POST['show_work_scope'])){ ?> 
     <table width="720">
       <tr>
