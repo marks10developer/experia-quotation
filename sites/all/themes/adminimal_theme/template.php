@@ -236,8 +236,12 @@ function adminimal_css_alter(&$css) {
  */
 function adminimal_js_alter(&$javascript) {
   // Fix module filter available updates page.
-  if (isset($javascript[drupal_get_path('module','module_filter').'/js/update_status.js'])) {
-    $javascript[drupal_get_path('module','module_filter').'/js/update_status.js']['data'] = drupal_get_path('theme', 'adminimal') . '/js/update_status.js';
+  //if (isset($javascript[drupal_get_path('module','module_filter').'/js/update_status.js'])) {
+    //$javascript[drupal_get_path('module','module_filter').'/js/update_status.js']['data'] = drupal_get_path('theme', 'adminimal') . '/js/update_status.js';
+  if (module_exists('module_filter')) {
+    if (isset($javascript[drupal_get_path('module','module_filter').'/js/update_status.js'])) {
+      $javascript[drupal_get_path('module','module_filter').'/js/update_status.js']['data'] = drupal_get_path('theme', 'adminimal') . '/js/update_status.js';
+    }
   }
 }
 
