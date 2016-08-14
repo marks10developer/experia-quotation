@@ -47,7 +47,7 @@ function update_content($form, &$form_state, $params){
     $form['table'] =  array(
       '#type' => 'markup',
       '#markup' => '<div class="form-item form-type-select form-item-supply-items">
-          <label for="">Item I. Supply:</label>
+          <label for="">Item I. Equipments:</label>
         </div>
       <table class="views-table sticky-enabled cols-7 tableheader-processed sticky-table supply-table">
       <tr>
@@ -169,6 +169,21 @@ function update_content($form, &$form_state, $params){
        '#type' => 'markup',
        '#markup' => '<div class="supply-cost"><h2>Total Supply Amount</h2><h2 class="total-cost" id="supply_cost"></h2></div>'
     );
+    
+    $form['equipment_note'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Equipment Note',
+      '#size' => 100,
+      '#value' => isset($quotation_details->field_equipment_note['und']) ? $quotation_details->field_equipment_note['und'][0]['value'] : '',
+      '#attributes' => array(
+        'class' => array("custom-select"),  
+        'id' => 'equipment-note',
+        'name' => 'equipment_note',
+        'maxlength' => '2000',
+      ),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+    );
   }else{
     drupal_goto('experia/quotation/step-1');
   }
@@ -209,7 +224,8 @@ function update_content($form, &$form_state, $params){
       '#prefix' => '<td>',
       '#suffix' => '</td>',
       '#value' => $installation['installation_location']
-    );
+    ); 
+    
     $form['installation_description' . $key] = array(
       '#type' => 'textfield',
       '#size' => 60,
@@ -287,6 +303,20 @@ function update_content($form, &$form_state, $params){
   $form['installation_cost'] =  array(
      '#type' => 'markup',
      '#markup' => '<div class="installation-cost"><h2>Total Installation Amount</h2><h2 class="total-cost">0.0</h2></div>'
+  );
+  $form['installation_note'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Installation Note',
+    '#size' => 100,
+    '#value' => isset($quotation_details->field_installation_note['und']) ? $quotation_details->field_installation_note['und'][0]['value'] : '',
+    '#attributes' => array(
+      'class' => array("custom-select"),  
+      'id' => 'installation-note', 
+      'maxlength' => '2000',
+      'name'=>'installation_note'
+    ),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
   );
   
   $form['grand_total_cost'] =  array(
@@ -437,6 +467,9 @@ function update_content_submit($form, &$form_state){
     $node->field_show_exclusion['und'][0]['value'] = $input['show_exclusion'];
     $node->field_show_warranty['und'][0]['value'] = $input['show_warranty'];
     $node->field_show_conclusion['und'][0]['value'] = $input['show_conclusion'];
+    $node->field_installation_note['und'][0]['value'] = $input['installation_note'];
+    $node->field_equipment_note['und'][0]['value'] = $input['equipment_note'];
+    
     
     $node->body['und'][0]['value'] = $content;
     

@@ -155,6 +155,19 @@ function quotation_step_2($form, &$form_state, $params){
        '#type' => 'markup',
        '#markup' => '<div class="supply-cost"><h2>Total Supply Amount</h2><h2 class="total-cost" id="supply_cost"></h2></div>'
     );
+    $form['equipment_note'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Equipment Note',
+      '#size' => 100,
+      '#attributes' => array(
+        'class' => array("custom-select"),  
+        'id' => 'equipment-note',
+        'name' => 'equipment_note',
+        'maxlength' => '2000',
+      ),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+    );
   }else{
     drupal_goto('experia/quotation/step-1');
   }
@@ -194,6 +207,8 @@ function quotation_step_2($form, &$form_state, $params){
     '#prefix' => '<td>',
     '#suffix' => '</td>',
   );
+  
+ 
   $form['installation_description'] = array(
     '#type' => 'textfield',
     '#size' => 60,
@@ -269,6 +284,20 @@ function quotation_step_2($form, &$form_state, $params){
   $form['installation_cost'] =  array(
      '#type' => 'markup',
      '#markup' => '<div class="installation-cost"><h2>Total Installation Amount</h2><h2 class="total-cost">0.0</h2></div>'
+  );
+  
+  $form['installation_note'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Installation Note',
+    '#size' => 100, 
+    '#attributes' => array(
+      'class' => array("custom-select"),  
+      'id' => 'installation-note', 
+      'maxlength' => '2000',
+      'name'=>'installation_note'
+    ),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
   );
   
   $form['grand_total_cost'] =  array(
@@ -417,6 +446,8 @@ function quotation_step_2_submit($form, &$form_state){
     $node->field_show_exclusion['und'][0]['value'] = $input['show_exclusion'];
     $node->field_show_warranty['und'][0]['value'] = $input['show_warranty'];
     $node->field_show_conclusion['und'][0]['value'] = $input['show_conclusion'];
+    $node->field_installation_note['und'][0]['value'] = $input['installation_note'];
+    $node->field_equipment_note['und'][0]['value'] = $input['equipment_note'];
     $node->created = time();
     $node->type = 'quotation';
     

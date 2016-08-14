@@ -40,6 +40,9 @@
       .brand-total{ 
         text-align: right;
       }
+      .signatures p{
+        line-height: 0px;
+      }
     </style>
   </head>
 <body>
@@ -51,24 +54,41 @@
  <?php $customer_details = node_load($_POST['customer']); ?>
   <table class="header">
     <tr>
-      <td> 
-        <img src="<?php echo $base_url . '/' . drupal_get_path('module','experia') . '/images/front-logo.jpg' ?>" width="100" height="100"  />
+      <td style="vertical-align: middle;"> 
+        <img src="<?php echo $base_url . '/' . drupal_get_path('module','experia') . '/images/front-logo.jpg' ?>" width="270" height="50"  />
       </td>
       <td> 
           <?php echo $_POST['header']['value']; ?>
       </td>
     </tr>
   </table>
-  <br />
+  <br /> 
+   
+  <table width="720">
+    <tr>
+      <th width="120">DATE:</th>
+      <td><?php echo date('d-M-Y'); ?></td>
+    </tr>
+    <tr>
+      <th width="120">COMPANY NAME :</th>
+      <td><?php echo $customer_details->title; ?></td>
+    </tr>
+    <tr>
+      <th width="120">ADDRESS :</th>
+      <td><?php echo $customer_details->field_address['und'][0]['value']; ?></td>
+    </tr>
+    <tr>
+      <th width="120">TEL NO. :</th>
+      <td><?php echo $customer_details->field_contact_number['und'][0]['value']; ?></td>
+    </tr>
+    <tr>
+      <th width="120">SUBJECT :</th>
+      <td>Proposal for Supply and Installation of Airconditioning Units for</td>
+    </tr>
+  </table>
   
-  <b>DATE: <?php echo date('d-M-Y'); ?></b> <br />
-  <b>ATTENTION:</b> <?php echo $customer_details->field_contact_person['und'][0]['value']; ?><br />
-  <b>COMPANY:</b> <?php echo $customer_details->title; ?><br />
-  <b>ADDRESS:</b> <?php echo $customer_details->field_address['und'][0]['value']; ?><br />
-  <b>TEL NO.:</b> <?php echo $customer_details->field_contact_number['und'][0]['value']; ?><br />
-  <b>SUBJECT: </b> Proposal for the Supply and Installation of Air-conditioning Units. <br />
   <br />
-  <br />
+ 
   <table width="720"> 
     <tr>
       <td> <?php echo $_POST['the_contents']['value']; ?></td>
@@ -134,9 +154,14 @@
         <td style="width:90px;word-wrap: break-word;"><?php echo number_format($discount_price,2); ?></td>
         <td style="width:90px;word-wrap: break-word;"><?php echo number_format($total,2); ?></td>
       </tr> 
-      <?php } ?>
+      <?php } ?>  
       <tr><th colspan="20" class="brand-total">TOTAL SUPPLY AMOUNT: <?php echo number_format($brand_total,2);?></th></tr>
     <?php } ?>
+      <?php if(isset($_POST['equipment_note']) && !empty($_POST['equipment_note'])) { ?>
+      <tr>
+        <td colspan="100"><?php echo $_POST['equipment_note']; ?></td>
+      </tr>
+      <?php } ?>
   <?php } ?>
 
   </table>
@@ -176,6 +201,11 @@
       <td style="width:110px;word-wrap: break-word;"><?php echo number_format($_POST['installation_total'][$key],2); ?></td> 
     </tr>
   <?php } ?>
+    <?php if(isset($_POST['installation_note']) && !empty($_POST['installation_note'])) { ?>
+    <tr>
+      <td colspan="100"><?php echo $_POST['installation_note']; ?></td>
+    </tr>
+    <?php } ?>
     <tr>
       <th colspan="20" style="text-align: right;">
         TOTAL INSTALLATION AMOUNT: <?php echo number_format($installation_cost ,2); ?> 
@@ -251,29 +281,10 @@
   
   <?php } ?>
   
-<br /> <br /> <br /> <br /> <br /> 
-<table width="720">
-  <tr>
-    <td width="520">
-      <p>Very Truly Yours,</p> 
-      <p>
-        <?php
-          $firstname = isset($user->data['firstname']) ? $user->data['firstname'] : '';
-          $lastname = isset($user->data['lastname']) ? $user->data['lastname'] : '';
-          $position = isset($user->data['position']) ? $user->data['position'] : '';
-        ?><br> 
-        <b><?php echo $firstname; ?> <?php echo $lastname; ?></b><br><br>
-        <?php echo $position; ?>
-      </p>
-    
-    </td>
-    <td>
-      <p>Conforme:</p><br>
-      <p>Signature Over Printed Name:</p> 
-    </td>
-  </tr>
-</table>
-
+<br /> <br /> <br /> <br /> <br />
+  <div class="signatures">
+   <?php echo variable_get('signatures',''); ?>
+  </div>
 </div>
 
 

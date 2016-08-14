@@ -72,6 +72,16 @@ function quotation_default_values($form, &$form_state){
     '#suffix' => '</p>',
   );
   
+  $form['signatures'] = array(
+    '#type' => 'text_format',
+    '#format' => 'full_html',
+    '#title' => 'Signatures',
+    '#wysiwyg' => true,
+    '#value' => variable_get('signatures',''),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+  );
+  
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => 'Save',  
@@ -88,5 +98,6 @@ function quotation_default_values_submit($form, &$form_state) {
   variable_set('warranty', $input['warranty']['value']);
   variable_set('conclusion', $input['conclusion']['value']);
   variable_set('the_contents', $input['the_contents']['value']);
+  variable_set('signatures', $input['signatures']['value']);
   drupal_set_message('Default Values Saved');
 }
