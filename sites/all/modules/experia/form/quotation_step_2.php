@@ -14,6 +14,15 @@ function quotation_step_2($form, &$form_state, $params){
     ),
     '#suffix' => '<div><a href="'.$base_url.'/node/add/customers">+ Add new Customer</a></div><br />'
   );
+  
+  $field = field_info_field('field_subject');
+  $instance = field_info_instance('node', 'field_subject', 'quotation');
+
+  $form['subject'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Subject',
+    '#value' =>  $instance['default_value'][0]['value'],
+  );
 
   $form['header'] = array(
       '#type' => 'text_format',
@@ -412,12 +421,12 @@ function quotation_step_2_submit($form, &$form_state){
       $installation_details[$key]['installation_total'] = $input['installation_total'][$key];
     }
      
-    
+    $customer_load = node_load($input['customer']);
     ob_start();
     require_once(dirname(__FILE__).'/../templates/quotation/quotation-html.tpl.php');
     $content = ob_get_contents();
     ob_clean();
-    $customer_load = node_load($input['customer']);
+    
     
     $node = new stdClass();
     $node->title = 'Quotation for ' . $customer_load->title;
@@ -448,6 +457,8 @@ function quotation_step_2_submit($form, &$form_state){
     $node->field_show_conclusion['und'][0]['value'] = $input['show_conclusion'];
     $node->field_installation_note['und'][0]['value'] = $input['installation_note'];
     $node->field_equipment_note['und'][0]['value'] = $input['equipment_note'];
+    $node->field_customer_type['und'][0]['value'] = $input['customer'];
+    $node->field_subject['und'][0]['value'] = $input['subject'];
     $node->created = time();
     $node->type = 'quotation';
     

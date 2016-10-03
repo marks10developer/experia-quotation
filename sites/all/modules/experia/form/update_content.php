@@ -22,6 +22,16 @@ function update_content($form, &$form_state, $params){
         'class' => array("custom-select"),  
         'id' => 'customer',
       ),
+      '#value' => isset($quotation_details->field_customer_type['und']) ? $quotation_details->field_customer_type['und'][0]['value'] : '',
+    );
+    
+    $field = field_info_field('field_subject');
+    $instance = field_info_instance('node', 'field_subject', 'quotation');
+ 
+    $form['subject'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Subject',
+      '#value' => isset($quotation_details->field_subject['und']) ? $quotation_details->field_subject['und'][0]['value'] : $instance['default_value'][0]['value'],
     );
 
     $form['header'] = array(
@@ -420,7 +430,7 @@ function update_content_submit($form, &$form_state){
     $aircon_details_array = array();
     $installation_details = array();
     foreach($input['aircon_quantity'] as $key => $data){
-      $aircon_details_array[$key]['aircon_quantity'] = $data;
+      $aircon_details_array[$key]['aircon_quantity'] = $data; 
       $aircon_details_array[$key]['aircon_discount_percentage'] = $input['aircon_discount_percentage'][$key];
     }
     
@@ -433,12 +443,12 @@ function update_content_submit($form, &$form_state){
       $installation_details[$key]['installation_total'] = $input['installation_total'][$key];
     }
      
-    
+    $customer_load = node_load($input['customer']);
     ob_start();
     require_once(dirname(__FILE__).'/../templates/quotation/quotation-html.tpl.php');
     $content = ob_get_contents();
     ob_clean();
-    $customer_load = node_load($input['customer']);
+    
     
     $node = node_load($input['nid']);
      
@@ -452,7 +462,7 @@ function update_content_submit($form, &$form_state){
     
     
     
-    $node->body['und'][0]['value'] = $content;
+     
     $node->field_header['und'][0]['value'] = $input['header']['value'];
     $node->field_the_contents['und'][0]['value'] = $input['the_contents']['value'];
     $node->field_aircons_details['und'][0]['value'] = serialize($aircon_details_array);
@@ -468,9 +478,9 @@ function update_content_submit($form, &$form_state){
     $node->field_show_warranty['und'][0]['value'] = $input['show_warranty'];
     $node->field_show_conclusion['und'][0]['value'] = $input['show_conclusion'];
     $node->field_installation_note['und'][0]['value'] = $input['installation_note'];
-    $node->field_equipment_note['und'][0]['value'] = $input['equipment_note'];
-    
-    
+    $node->field_equipment_note['und'][0]['value'] = $input['equipment_note']; 
+    $node->field_customer_type['und'][0]['value'] = $input['customer'];
+    $node->field_subject['und'][0]['value'] = $input['subject'];
     $node->body['und'][0]['value'] = $content;
     
     //drupal_set_message('<pre>' . print_r($_POST,true) . '</pre>');

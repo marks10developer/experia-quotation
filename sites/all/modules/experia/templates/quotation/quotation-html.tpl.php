@@ -13,7 +13,20 @@
       table.header{
         margin: 0 auto; 
       }
-
+      .header-text{
+        font-size: 11px;
+        margin: 0;
+        padding: 0;
+      }
+      .header-text ul{
+        padding: 0;
+        margin: 0;
+        list-style-position: outside;
+        list-style-type: none;
+      }
+      table.header p{
+        line-height: 2px;
+      }
       table.header span{ 
         margin-left: 15px;
         margin-bottom: 15px;
@@ -31,6 +44,7 @@
       }
       .header ul{
         list-style-type: none;
+        padding: 0;
       }
       .table-header{
         background: #538dd5;
@@ -50,18 +64,20 @@
   <div class="cover">
     <img src="<?php echo $base_url . '/' . drupal_get_path('module','experia') . '/images/cover.jpg' ?>" width="720" height="960"  />
   </div>
-  
+   <br /><br /><br />
  <?php $customer_details = node_load($_POST['customer']); ?>
   <table class="header">
     <tr>
-      <td style="vertical-align: middle;"> 
+      <td style="vertical-align: middle;text-align: left;padding: 0;margin: 0;"> 
         <img src="<?php echo $base_url . '/' . drupal_get_path('module','experia') . '/images/front-logo.jpg' ?>" width="270" height="50"  />
+        <br /><?php echo ($_POST['header']['value']); ?> 
       </td>
-      <td> 
-          <?php echo $_POST['header']['value']; ?>
+      <td class="header-text">&nbsp;
+          <?php //echo $_POST['header']['value']; ?>
       </td>
     </tr>
-  </table>
+  </table> 
+ 
   <br /> 
    
   <table width="720">
@@ -70,7 +86,15 @@
       <td><?php echo date('d-M-Y'); ?></td>
     </tr>
     <tr>
-      <th width="120">COMPANY NAME :</th>
+      <th width="120">
+        <?php
+          if($customer_details->field_customer_type['und'][0]['value'] == 'Commercial'){
+            echo strtoupper('Company Name: ');
+          }else{
+            echo strtoupper('Attention To: ');
+          }
+        ?>
+        </th>
       <td><?php echo $customer_details->title; ?></td>
     </tr>
     <tr>
@@ -83,7 +107,7 @@
     </tr>
     <tr>
       <th width="120">SUBJECT :</th>
-      <td>Proposal for Supply and Installation of Airconditioning Units for</td>
+      <td><?php echo $_POST['subject']; ?></td>
     </tr>
   </table>
   
@@ -136,15 +160,15 @@
       
       <?php
       $brand_total = 0;
-      foreach($aircons as $aircon) {
+      foreach($aircons as $aircon) { 
         $aircon_details = $aircon['aircon_details']; 
         $model = isset($aircon_details->field_model_number['und']) ? $aircon_details->field_model_number['und'][0]['value'] : '';
         $item_code = isset($aircon_details->field_item_code['und']) ? $aircon_details->field_item_code['und'][0]['value'] : '';
         $price = (float) $aircon_details->field_price['und'][0]['value'];  
-        $discount = (int) $_POST['aircon_discount_percentage'][$id]; 
+        $discount = (int) $_POST['aircon_discount_percentage'][$aircon_details->nid]; 
         $discount_price = $price - ($price * ($discount / 100));
         $total = $discount_price * intval($aircon_details->_quantity);
-        $brand_total += $total;
+        $brand_total += $total; 
       ?>
       <tr>
         <td style="width:20px;word-wrap: break-word;"><?php echo $aircon_details->_quantity; ?></td>
